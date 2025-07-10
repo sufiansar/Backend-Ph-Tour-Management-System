@@ -19,14 +19,14 @@ const stateServer = async () => {
   }
 };
 
-process.on("SIGTERM", () => {
-  console.log("SIGTERM Ditected .... server shutting off");
-  if (server) {
-    server.close();
-    process.exit;
-  }
-  process.exit;
-});
+// process.on("SIGTERM", () => {
+//   console.log("SIGTERM Ditected .... server shutting off");
+//   if (server) {
+//     server.close();
+//     process.exit;
+//   }
+//   process.exit;
+// });
 // unhandledRejection
 process.on("unhandledRejection", () => {
   console.log(" unhandle Rejecton detected.....Server shutting off ");
