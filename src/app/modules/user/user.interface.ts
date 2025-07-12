@@ -26,7 +26,7 @@ export interface Iuser {
   adderess?: string;
   isdeleted?: string;
   isactive?: Isactive;
-  isVerified?: string;
+  isVerified?: boolean;
   phone?: number;
   Role: Role;
   Auth: IAuthProvider[];
