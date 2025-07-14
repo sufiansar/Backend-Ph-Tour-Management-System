@@ -2,7 +2,7 @@ import { Server } from "http";
 
 import mongoose from "mongoose";
 import app from "./app";
-import { envVars } from "./config/env";
+import { envVars } from "./app/config/env";
 import { seedSuparAdmin } from "./app/utility/seedSuperAdmin";
 
 let server: Server;
@@ -24,14 +24,14 @@ const stateServer = async () => {
   await seedSuparAdmin();
 })();
 
-process.on("SIGTERM", () => {
-  console.log("SIGTERM Ditected .... server shutting off");
-  if (server) {
-    server.close();
-    process.exit;
-  }
-  process.exit;
-});
+// process.on("SIGTERM", () => {
+//   console.log("SIGTERM Ditected .... server shutting off");
+//   if (server) {
+//     server.close();
+//     process.exit;
+//   }
+//   process.exit;
+// });
 // unhandledRejection;
 process.on("unhandledRejection", () => {
   console.log(" unhandle Rejecton detected.....Server shutting off ");
