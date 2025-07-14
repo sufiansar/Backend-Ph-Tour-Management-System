@@ -4,7 +4,7 @@ import { UserServices } from "./user.service";
 import { catchAsycn } from "../../utility/catchAsync";
 import { sendResponse } from "../../utility/sendResponce";
 import { verifyToken } from "../../utility/jwt";
-import { envVars } from "../../../config/env";
+import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
 
 const createUser = catchAsycn(async (req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import { envVars } from "../../config/env";
+import { envVars } from "../config/env";
 import { IAuthProvider, Iuser, Role } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";
 import bcryptjs from "bcryptjs";
