@@ -10,32 +10,57 @@ import AppError from "../../errorHelpers/AppError";
 import { createUserToken } from "../../utility/user.tokens";
 import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
+import passport from "passport";
 
 const credentialsLogin = catchAsycn(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loginInfo = await AuthServices.credentialsLogin(req.body);
+    // const loginInfo = await AuthServices.credentialsLogin(req.body);
 
-    // res.cookie("accessToken", loginInfo.accessToken, {
-    //     httpOnly: true,
-    //     secure: false
-    // })
+    passport.authenticate(
+      "local",
+      { session: false },
+      async (err: any, user: any, info: any) => {
+        if (err) {
+          return next(err);
+        }
+        if (!user) {
+          return next(
+            new AppError(
+              httpStatus.UNAUTHORIZED,
+              info.message || "Login Failed",
+              ""
+            )
+          );
+        }
+        const userTokens = createUserToken(user);
 
-    // res.cookie("refreshToken", loginInfo.refreshToken, {
-    //     httpOnly: true,
-    //     secure: false,
-    // })
+        // res.cookie("accessToken", loginInfo.accessToken, {
+        //     httpOnly: true,
+        //     secure: false
+        // })
 
-    setAuthCookie(res, loginInfo);
+        // res.cookie("refreshToken", loginInfo.refreshToken, {
+        //     httpOnly: true,
+        //     secure: false,
+        // })
+        const { password: pass, ...rest } = user.toObject();
 
-    sendResponse(res, {
-      success: true,
-      successCode: httpStatus.OK,
-      message: "User Logged In Successfully",
-      data: loginInfo,
-    });
+        setAuthCookie(res, userTokens);
+
+        sendResponse(res, {
+          success: true,
+          successCode: httpStatus.OK,
+          message: "User Logged In Successfully",
+          data: {
+            accessToken: userTokens.accessToken,
+            refreshToken: userTokens.refreshToken,
+            user: rest,
+          },
+        });
+      }
+    )(req, res, next);
   }
 );
-
 const getNewAccessToken = catchAsycn(
   async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies.refreshToken;

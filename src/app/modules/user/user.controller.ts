@@ -30,7 +30,11 @@ const updateUser = catchAsycn(async (req: Request, res: Response) => {
   // ) as JwtPayload;
   const verifiedToken = req.user;
   const payload = req.body;
-  const user = await UserServices.updateUser(userId, payload, verifiedToken);
+  const user = await UserServices.updateUser(
+    userId,
+    payload,
+    verifiedToken as JwtPayload
+  );
   sendResponse(res, {
     success: true,
     successCode: httpStatus.CREATED,
@@ -42,6 +46,8 @@ const updateUser = catchAsycn(async (req: Request, res: Response) => {
   //   user,
   // });
 });
+
+
 const getAllUser = catchAsycn(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await UserServices.getAllUser();
