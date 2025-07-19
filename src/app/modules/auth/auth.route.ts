@@ -15,7 +15,6 @@ router.post(
   AuthControllers.resetPassword
 );
 
-// /login -> succesful google login -> / frontend
 router.get(
   "/google",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -27,7 +26,7 @@ router.get(
   }
 );
 
-// api/v1/auth/google/callback?state=/booking
+
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),

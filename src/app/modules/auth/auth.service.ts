@@ -120,7 +120,6 @@ const resetPassword = async (
   );
   user!.save();
 };
-console.log(Number(envVars.BCRYPT_SALT_ROUNT));
 
 export const AuthServices = {
   credentialsLogin,

@@ -52,6 +52,7 @@ const updateUser = async (
         ""
       );
     }
+
     if (payload.Role === Role.SUPER_ADMIN || decodedToken.role === Role.ADMIN) {
       throw new AppError(
         httpSuccessCode.FORBIDDEN,
@@ -60,6 +61,28 @@ const updateUser = async (
       );
     }
   }
+
+  if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
+    if (userId !== decodedToken.userId) {
+      throw new AppError(
+        httpSuccessCode.FORBIDDEN,
+        "You are unauthorized to update another user's profile",
+        ""
+      );
+    }
+  }
+
+  if (
+    decodedToken.role === Role.ADMIN &&
+    isUserExit.Role === Role.SUPER_ADMIN
+  ) {
+    throw new AppError(
+      httpSuccessCode.FORBIDDEN,
+      "You are not authorized to update a superadmin profile",
+      ""
+    );
+  }
+
   if (payload.isactive || payload.isdeleted || payload.isVerified) {
     if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
       throw new AppError(
