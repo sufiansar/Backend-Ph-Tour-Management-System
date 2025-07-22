@@ -30,6 +30,7 @@ const updateUser = catchAsycn(async (req: Request, res: Response) => {
   // ) as JwtPayload;
   const verifiedToken = req.user;
   const payload = req.body;
+  console.log(payload);
   const user = await UserServices.updateUser(
     userId,
     payload,
@@ -47,10 +48,12 @@ const updateUser = catchAsycn(async (req: Request, res: Response) => {
   // });
 });
 
-
 const getAllUser = catchAsycn(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await UserServices.getAllUser();
+    const query = req.query;
+    const result = await UserServices.getAllUser(
+      query as Record<string, string>
+    );
 
     sendResponse(res, {
       success: true,
@@ -66,9 +69,23 @@ const getAllUser = catchAsycn(
     // });
   }
 );
+const getSingleUser = catchAsycn(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const result = await UserServices.getSingleUser(id);
+
+    sendResponse(res, {
+      success: true,
+      successCode: httpStatus.OK,
+      message: "Get Single User Retrived Successfully",
+      data: result.data,
+    });
+  }
+);
 
 export const UserControllers = {
   createUser,
   getAllUser,
   updateUser,
+  getSingleUser,
 };
