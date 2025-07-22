@@ -18,8 +18,8 @@ const userSchema = new Schema<Iuser>(
     email: { type: String, required: true, unique: true },
     password: { type: String },
     picture: { type: String },
-    adderess: { type: String },
-    phone: { type: Number },
+    address: { type: String },
+    phone: { type: String },
     isactive: {
       type: String,
       enum: Object.values(Isactive),

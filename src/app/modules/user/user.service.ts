@@ -5,6 +5,9 @@ import { User } from "./user.model";
 import httpSuccessCode from "http-status-codes";
 import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
+import { QueryBuilder } from "../../utility/queryBuilder";
+import { userSearchableFields } from "./user.constant";
+import { promise } from "zod";
 
 const createUser = async (payload: Partial<Iuser>) => {
   const { email, password, ...rest } = payload;
@@ -98,6 +101,8 @@ const updateUser = async (
       envVars.BCRYPT_SALT_ROUNT
     );
   }
+
+  console.log(payload);
   const newUpdateUser = await User.findByIdAndUpdate(userId, payload, {
     new: true,
     runValidators: true,
@@ -106,14 +111,28 @@ const updateUser = async (
   return newUpdateUser;
 };
 
-const getAllUser = async () => {
-  const user = await User.find({});
-  const totalUser = await User.countDocuments();
+const getAllUser = async (query: Record<string, string>) => {
+  // const user = await User.find({});
+  // const totalUser = await User.countDocuments();
+
+  const userQueryBuilder = new QueryBuilder(User.find(), query);
+  const users = await userQueryBuilder
+    .filter()
+    .search(userSearchableFields)
+    .fields()
+    .sort()
+    .paginate();
+  const [data, meta] = await Promise.all([users.build(), users.getMeta()]);
+  return {
+    data,
+    meta,
+  };
+};
+const getSingleUser = async (id: string) => {
+  const user = await User.findById(id);
+
   return {
     data: user,
-    meta: {
-      total: totalUser,
-    },
   };
 };
 
@@ -121,4 +140,5 @@ export const UserServices = {
   createUser,
   getAllUser,
   updateUser,
+  getSingleUser,
 };

@@ -11,15 +11,15 @@ const createTour = async (payload: Itour) => {
     throw new Error("A tour with this title already exists.");
   }
 
-  const baseSlug = payload.title.toLowerCase().split(" ").join("-");
-  let slug = `${baseSlug}`;
+  // const baseSlug = payload.title.toLowerCase().split(" ").join("-");
+  // let slug = `${baseSlug}`;
 
-  let counter = 0;
-  while (await Tour.exists({ slug })) {
-    slug = `${slug}-${counter++}`; // dhaka-division-2
-  }
+  // let counter = 0;
+  // while (await Tour.exists({ slug })) {
+  //   slug = `${slug}-${counter++}`; // dhaka-division-2
+  // }
 
-  payload.slug = slug;
+  // payload.slug = slug;
 
   const tour = await Tour.create(payload);
 
@@ -43,6 +43,14 @@ const getAllTours = async (query: Record<string, string>) => {
   };
 };
 
+const getSingleTour = async (slug: string) => {
+  const singleTour = await Tour.findOne({ slug });
+
+  return {
+    data: singleTour,
+  };
+};
+
 const updateTour = async (id: string, payload: Partial<Itour>) => {
   const existingTour = await Tour.findById(id);
 
@@ -60,16 +68,25 @@ const deleteTour = async (id: string) => {
 };
 
 const createTourType = async (payload: ItourTypes) => {
-  const existingTourType = await TourTypesModel.findOne({ name: payload.name });
+  const existingTourType = await TourTypesModel.findOne({ name: payload });
 
   if (existingTourType) {
     throw new Error("Tour type already exists.");
   }
 
-  return await TourTypesModel.create({ name });
+  return await TourTypesModel.create({
+    name: payload,
+  });
 };
 const getAllTourTypes = async () => {
   return await TourTypesModel.find();
+};
+
+const getSingleTourType = async (id: string) => {
+  const tourType = await TourTypesModel.findById(id);
+  return {
+    data: tourType,
+  };
 };
 const updateTourType = async (id: string, payload: ItourTypes) => {
   const existingTourType = await TourTypesModel.findById(id);
@@ -100,4 +117,6 @@ export const TourService = {
   getAllTours,
   updateTour,
   deleteTour,
+  getSingleTour,
+  getSingleTourType,
 };

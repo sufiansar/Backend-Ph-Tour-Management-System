@@ -9,7 +9,8 @@ export const createTourZodSchema = z.object({
 
   slug: z
     .string({ required_error: "Slug is required" })
-    .min(3, { message: "Slug must be at least 3 characters" }),
+    .min(3, { message: "Slug must be at least 3 characters" })
+    .optional(),
 
   description: z.string().optional(),
 
@@ -19,11 +20,10 @@ export const createTourZodSchema = z.object({
 
   location: z.string().optional(),
 
-  costFrom: z
-    .string()
-    .regex(/^\d+$/, { message: "Cost must be a numeric string" })
-    .optional(),
+  costFrom: z.number().optional(),
 
+  departureLocation: z.string().optional(),
+  arrivelLocation: z.string().optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
 
@@ -84,7 +84,8 @@ export const UpdateTourZodSchema = z.object({
     .string()
     .regex(/^\d+$/, { message: "Cost must be a numeric string" })
     .optional(),
-
+  departureLocation: z.string().optional(),
+  arrivelLocation: z.string().optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
 

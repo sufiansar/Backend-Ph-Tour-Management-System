@@ -52,7 +52,8 @@ export const UpdateUserZodSchema = z.object({
   name: z
     .string({ required_error: "Name is required" })
     .min(3, { message: "Name must be at least 3 characters" })
-    .max(50, { message: "Name must be under 50 characters" }),
+    .max(50, { message: "Name must be under 50 characters" })
+    .optional(),
 
   password: z
     .string({ required_error: "Password is required" })
@@ -81,9 +82,13 @@ export const UpdateUserZodSchema = z.object({
   role: z.enum(Object.values(Role) as [string]).optional(),
   isactive: z.enum(Object.values(Isactive) as [string]).optional(),
 
-  isdeleted: z.boolean({ required_error: "isdeleted must be true or false" }),
+  isdeleted: z
+    .boolean({ required_error: "isdeleted must be true or false" })
+    .optional(),
 
-  isVerified: z.boolean({ required_error: "isVerified must be true or false" }),
+  isVerified: z
+    .boolean({ required_error: "isVerified must be true or false" })
+    .optional(),
 
   address: z
     .string({

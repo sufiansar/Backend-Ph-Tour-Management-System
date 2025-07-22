@@ -16,7 +16,7 @@ router.get("/tour-types", TourController.getAllTourTypes);
 router.post(
   "/create-tour-type",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-  validationRequest(createTourZodSchema),
+  validationRequest(createTourTypeZodSchema),
   TourController.createTourType
 );
 
@@ -27,6 +27,11 @@ router.patch(
   TourController.updateTourType
 );
 
+router.get(
+  "/tour-types/:id",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  TourController.getSingleTourType
+);
 router.delete(
   "/tour-types/:id",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
@@ -34,6 +39,7 @@ router.delete(
 );
 
 router.get("/", TourController.getAllTours);
+router.get("/:id", TourController.getSingleTour);
 
 router.post(
   "/create",
