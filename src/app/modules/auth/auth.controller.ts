@@ -115,9 +115,8 @@ const logOut = catchAsycn(
 const resetPassword = catchAsycn(
   async (req: Request, res: Response, next: NextFunction) => {
     const decodedToken = req.user;
-    const { newPassword, id } = req.body;
 
-    await AuthServices.resetPassword(decodedToken as JwtPayload, req.body);
+    await AuthServices.resetPassword(req.body, decodedToken as JwtPayload);
     sendResponse(res, {
       success: true,
       successCode: httpStatus.OK,
