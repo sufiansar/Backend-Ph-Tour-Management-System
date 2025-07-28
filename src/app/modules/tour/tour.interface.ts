@@ -23,6 +23,7 @@ export interface Itour {
   tourPlan?: string[];
   maxGuest?: number;
   minAge: number;
+  deleteImages?: string[];
   dicvision: Types.ObjectId;
   tourType: Types.ObjectId;
 }

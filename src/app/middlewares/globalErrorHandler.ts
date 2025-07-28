@@ -7,8 +7,9 @@ import { handelDuplicateError } from "../helpers/handelDuplicateError";
 import { handelValidationError } from "../helpers/handelValidationError";
 import { handelCastError } from "../helpers/handelCastError";
 import { handelZodError } from "../helpers/handelZodError";
+import { deleteImageFromCLoudinary } from "../config/cloudinary";
 
-export const globalErrorHander = (
+export const globalErrorHander = async (
   err: any,
   req: Request,
   res: Response,
@@ -16,6 +17,17 @@ export const globalErrorHander = (
 ) => {
   if (envVars.NODE_ENV === "Development") {
     console.log(err);
+  }
+
+  if (req.file) {
+    await deleteImageFromCLoudinary(req.file.path);
+  }
+
+  if (req.files && Array.isArray(req.files) && req.files.length) {
+    const imagesUrl = (req.files as Express.Multer.File[]).map(
+      (file) => file.path
+    );
+    await Promise.all(imagesUrl.map((url) => deleteImageFromCLoudinary(url)));
   }
   let statusCode = 500;
   let message = "Something went wrong";

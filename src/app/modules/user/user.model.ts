@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { IAuthProvider, Isactive, Iuser, Role } from "./user.interface";
+import { string } from "zod";
 
 const authschema = new Schema<IAuthProvider>(
   {

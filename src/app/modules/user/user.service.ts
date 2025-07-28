@@ -8,6 +8,8 @@ import { JwtPayload } from "jsonwebtoken";
 import { QueryBuilder } from "../../utility/queryBuilder";
 import { userSearchableFields } from "./user.constant";
 import { promise } from "zod";
+import { deleteImageFromCLoudinary } from "../../config/cloudinary";
+import mongoose from "mongoose";
 
 const createUser = async (payload: Partial<Iuser>) => {
   const { email, password, ...rest } = payload;
@@ -102,12 +104,13 @@ const updateUser = async (
     );
   }
 
-  console.log(payload);
   const newUpdateUser = await User.findByIdAndUpdate(userId, payload, {
     new: true,
     runValidators: true,
   });
-
+  if (payload.picture && isUserExit?.picture) {
+    await deleteImageFromCLoudinary(isUserExit.picture);
+  }
   return newUpdateUser;
 };
 
@@ -129,10 +132,26 @@ const getAllUser = async (query: Record<string, string>) => {
   };
 };
 const getSingleUser = async (id: string) => {
-  const user = await User.findById(id);
+  const user = await User.findById(id).select("-password");
 
   return {
     data: user,
+  };
+};
+
+const getMe = async (userId: string) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID format");
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not Found");
+  }
+  console.log(userId);
+  console.log(user);
+  return {
+    user,
   };
 };
 
@@ -141,4 +160,5 @@ export const UserServices = {
   getAllUser,
   updateUser,
   getSingleUser,
+  getMe,
 };
