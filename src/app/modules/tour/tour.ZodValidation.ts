@@ -39,6 +39,7 @@ export const createTourZodSchema = z.object({
   amenities: z.array(z.string()).optional(),
 
   tourPlan: z.array(z.string()).optional(),
+  deleteImages: z.array(z.string()).optional(),
 
   maxGuest: z.number().int().positive().optional(),
 

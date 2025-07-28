@@ -6,9 +6,14 @@ import { sendResponse } from "../../utility/sendResponce";
 import { verifyToken } from "../../utility/jwt";
 import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
+import { Iuser } from "./user.interface";
 
 const createUser = catchAsycn(async (req: Request, res: Response) => {
-  const user = await UserServices.createUser(req.body);
+  const payload: Iuser = {
+    ...req.body,
+    picture: req.file?.path,
+  };
+  const user = await UserServices.createUser(payload);
   sendResponse(res, {
     success: true,
     successCode: httpStatus.CREATED,
@@ -29,8 +34,11 @@ const updateUser = catchAsycn(async (req: Request, res: Response) => {
   //   envVars.JWT_ACCESS_SECRET
   // ) as JwtPayload;
   const verifiedToken = req.user;
-  const payload = req.body;
-  console.log(payload);
+  const payload: Iuser = {
+    ...req.body,
+    picture: req.file?.path,
+  };
+
   const user = await UserServices.updateUser(
     userId,
     payload,
@@ -69,6 +77,22 @@ const getAllUser = catchAsycn(
     // });
   }
 );
+
+const getMe = catchAsycn(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload;
+    console.log(decodedToken);
+    const result = await UserServices.getMe(decodedToken.userId);
+
+    console.log(result);
+    sendResponse(res, {
+      success: true,
+      successCode: httpStatus.CREATED,
+      message: "Your profile Retrieved Successfully",
+      data: result,
+    });
+  }
+);
 const getSingleUser = catchAsycn(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
@@ -88,4 +112,5 @@ export const UserControllers = {
   getAllUser,
   updateUser,
   getSingleUser,
+  getMe,
 };

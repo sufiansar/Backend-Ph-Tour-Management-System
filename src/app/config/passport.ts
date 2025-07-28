@@ -7,10 +7,12 @@ import {
 } from "passport-google-oauth20";
 import { envVars } from "./env";
 import { User } from "../modules/user/user.model";
-import { Role } from "../modules/user/user.interface";
+import { Isactive, Role } from "../modules/user/user.interface";
 import dotenv from "dotenv";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcryptjs from "bcryptjs";
+import AppError from "../errorHelpers/AppError";
+import httpSuccessCode from "http-status-codes";
 dotenv.config();
 
 passport.use(
@@ -24,6 +26,20 @@ passport.use(
         const isUserExit = await User.findOne({ email });
         if (!isUserExit) {
           return done(null, false, { message: "User Not Found" });
+        }
+        if (
+          isUserExit.isactive === Isactive.BLOCKED ||
+          isUserExit.isactive === Isactive.INACTIVE
+        ) {
+          return done(`User is ${isUserExit.isactive}`);
+        }
+
+        if (isUserExit.isdeleted) {
+          return done("User deleted");
+        }
+
+        if (!isUserExit.isVerified) {
+          return done("User Not Verified");
         }
         const isGoogleAuthenticated = isUserExit.Auth.some(
           (auth) => auth.provider === "google"
@@ -70,9 +86,24 @@ passport.use(
         if (!email) {
           return done(null, false, { message: "email NOt Found" });
         }
-        let user = await User.findOne({ email });
-        if (!user) {
-          user = await User.create({
+        let isUserExit = await User.findOne({ email });
+        if (isUserExit && !isUserExit.isVerified) {
+          return done("User Not Verified");
+        }
+        if (
+          isUserExit &&
+          (isUserExit.isactive === Isactive.BLOCKED ||
+            isUserExit.isactive === Isactive.INACTIVE)
+        ) {
+          return done(`User is ${isUserExit.isactive}`);
+        }
+
+        if (isUserExit && isUserExit.isdeleted) {
+          return done("User deleted");
+        }
+
+        if (!isUserExit) {
+          isUserExit = await User.create({
             email,
             name: profile.displayName,
             picture: profile.photos?.[0].value,
@@ -84,7 +115,7 @@ passport.use(
               },
             ],
           });
-          return done(null, user);
+          return done(null, isUserExit);
         }
       } catch (error) {
         console.log("google sTrategy Error", error);

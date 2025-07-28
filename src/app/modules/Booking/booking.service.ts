@@ -9,10 +9,7 @@ import { Tour } from "../tour/tour.model";
 import { startSession } from "mongoose";
 import { SSLService } from "../../sslCommerz/sslCommerz.service";
 import { ISSlCommerz } from "../../sslCommerz/sslCommerz.interface";
-
-const getTransactionId = () => {
-  return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-};
+import { getTransactionId } from "../../utility/getTranacionId";
 
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
   const transactionId = getTransactionId();

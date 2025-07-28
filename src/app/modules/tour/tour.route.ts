@@ -1,3 +1,4 @@
+import { MulterUpload } from "../../config/multer";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { validationRequest } from "../../middlewares/validateReques";
 import { Role } from "../user/user.interface";
@@ -16,6 +17,7 @@ router.get("/tour-types", TourController.getAllTourTypes);
 router.post(
   "/create-tour-type",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+
   validationRequest(createTourTypeZodSchema),
   TourController.createTourType
 );
@@ -39,11 +41,13 @@ router.delete(
 );
 
 router.get("/", TourController.getAllTours);
+router.get("/", TourController.getAllTours);
 router.get("/:id", TourController.getSingleTour);
 
 router.post(
   "/create",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  MulterUpload.array("files"),
   validationRequest(createTourZodSchema),
   TourController.createTour
 );

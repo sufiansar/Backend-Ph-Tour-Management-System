@@ -2,9 +2,14 @@ import { Request, Response } from "express";
 import { catchAsycn } from "../../utility/catchAsync";
 import { sendResponse } from "../../utility/sendResponce";
 import { TourService } from "./tour.service";
+import { Itour } from "./tour.interface";
 
 const createTour = catchAsycn(async (req: Request, res: Response) => {
-  const result = await TourService.createTour(req.body);
+  const payload: Itour = {
+    ...req.body,
+    images: (req.files as Express.Multer.File[]).map((file) => file.path),
+  };
+  const result = await TourService.createTour(payload);
   sendResponse(res, {
     successCode: 201,
     success: true,
@@ -37,7 +42,11 @@ const getSingleTour = catchAsycn(async (req: Request, res: Response) => {
 });
 
 const updateTour = catchAsycn(async (req: Request, res: Response) => {
-  const result = await TourService.updateTour(req.params.id, req.body);
+  const payload: Itour = {
+    ...req.body,
+    images: (req.files as Express.Multer.File[]).map((file) => file.path),
+  };
+  const result = await TourService.updateTour(req.params.id, payload);
   sendResponse(res, {
     successCode: 200,
     success: true,

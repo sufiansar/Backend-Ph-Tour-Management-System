@@ -1,5 +1,5 @@
 import AppError from "../../errorHelpers/AppError";
-import { Isactive, Iuser } from "../user/user.interface";
+import { IAuthProvider, Isactive, Iuser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import httpSuccessCode from "http-status-codes";
 import bcryptjs from "bcryptjs";
@@ -10,6 +10,8 @@ import {
   createNewaccessTokenWithRefreshToken,
   createUserToken,
 } from "../../utility/user.tokens";
+import { sendEmail } from "../../utility/sendMail";
+import { name } from "ejs";
 const credentialsLogin = async (payload: Partial<Iuser>) => {
   const { email, password } = payload;
   const isUserexit = await User.findOne({ email });
@@ -94,8 +96,115 @@ const getNewAccessToken = async (refreshToken: string) => {
     accessToken: newAccesessToken,
   };
 };
-
 const resetPassword = async (
+  payload: Record<string, any>,
+  decodedToken: JwtPayload
+) => {
+  if (payload.id !== decodedToken.userId) {
+    throw new AppError(
+      httpSuccessCode.UNAUTHORIZED,
+      "You cannot reset your password",
+      ""
+    );
+  }
+
+  const isuserExit = await User.findById(decodedToken.userId);
+
+  if (!isuserExit) {
+    throw new AppError(httpSuccessCode.NOT_FOUND, "User not found", "");
+  }
+
+  const hashPassword = await bcryptjs.hash(
+    payload.newPassword,
+    Number(envVars.BCRYPT_SALT_ROUNT)
+  );
+
+  isuserExit.password = hashPassword;
+  await isuserExit.save();
+};
+
+const setPassword = async (userId: string, PlainPassword: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpSuccessCode.BAD_REQUEST, "User Not Found", "");
+  }
+
+  if (
+    user.password &&
+    user.Auth.some((providerObject) => providerObject.provider === "google")
+  ) {
+    throw new AppError(
+      httpSuccessCode.BAD_REQUEST,
+      "You Have already Set Password so You Can go nOw ",
+      ""
+    );
+  }
+  const hashPassword = await bcryptjs.hash(
+    PlainPassword,
+    Number(envVars.BCRYPT_SALT_ROUNT)
+  );
+
+  const credentialProvider: IAuthProvider = {
+    provider: "credientials",
+    providerId: user.email,
+  };
+
+  const auths: IAuthProvider[] = [...user.Auth, credentialProvider];
+
+  user.password = hashPassword;
+  user.Auth = auths;
+
+  await user.save();
+};
+
+const forgotPassword = async (email: string) => {
+  const isUserExit = await User.findOne({ email });
+
+  if (!isUserExit) {
+    throw new AppError(httpSuccessCode.BAD_REQUEST, "User does not exist", "");
+  }
+
+  if (
+    isUserExit.isactive === Isactive.BLOCKED ||
+    isUserExit.isactive === Isactive.INACTIVE
+  ) {
+    throw new AppError(
+      httpSuccessCode.BAD_REQUEST,
+      `User is ${isUserExit.isactive}`,
+      ""
+    );
+  }
+
+  if (isUserExit.isdeleted) {
+    throw new AppError(httpSuccessCode.BAD_REQUEST, "User deleted", "");
+  }
+  if (!isUserExit.isVerified) {
+    throw new AppError(403, "User Not Verified", "");
+  }
+
+  const jwtPayload = {
+    userId: isUserExit._id,
+    email: isUserExit.email,
+    role: isUserExit.Role,
+  };
+
+  const resetLink = Jwt.sign(jwtPayload, envVars.JWT_ACCESS_SECRET, {
+    expiresIn: "10m",
+  });
+
+  const resetUILink = `${envVars.FONTEND_URL}/reset-Password?id=${isUserExit._id}&token=${resetLink}`;
+  sendEmail({
+    to: isUserExit.email,
+    subject: "Forget Password",
+    templateName: "forgetPassword",
+    templateData: {
+      name: isUserExit.name,
+      resetUILink,
+    },
+  });
+};
+
+const changePassword = async (
   decodedToken: JwtPayload,
   newPassword: string,
   oldPassword: string
@@ -125,4 +234,7 @@ export const AuthServices = {
   credentialsLogin,
   getNewAccessToken,
   resetPassword,
+  changePassword,
+  forgotPassword,
+  setPassword,
 };

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsycn } from "../../utility/catchAsync";
 
 import { sendResponse } from "../../utility/sendResponce";
-import httpStatus from "http-status-codes";
+import httpStatus, { StatusCodes } from "http-status-codes";
 
 import { setAuthCookie } from "../../utility/setAuthCookie";
 import { AuthServices } from "./auth.service";
@@ -115,10 +115,53 @@ const logOut = catchAsycn(
 const resetPassword = catchAsycn(
   async (req: Request, res: Response, next: NextFunction) => {
     const decodedToken = req.user;
+    const { newPassword, id } = req.body;
+
+    await AuthServices.resetPassword(decodedToken as JwtPayload, req.body);
+    sendResponse(res, {
+      success: true,
+      successCode: httpStatus.OK,
+      message: "Password Change  Succesfully",
+      data: null,
+    });
+  }
+);
+
+const setPassword = catchAsycn(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload;
+    const { password } = req.body;
+
+    await AuthServices.setPassword(decodedToken.userId, password);
+    sendResponse(res, {
+      success: true,
+      successCode: httpStatus.OK,
+      message: "Password Change  Succesfully",
+      data: null,
+    });
+  }
+);
+
+const forgotPassword = catchAsycn(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    await AuthServices.forgotPassword(email);
+    sendResponse(res, {
+      success: true,
+      successCode: httpStatus.OK,
+      message: "Email Sent Succesfully",
+      data: null,
+    });
+  }
+);
+const changePassword = catchAsycn(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user;
     const newPassword = req.body.newPassword;
     const oldPassword = req.body.oldPassword;
     console.log(newPassword);
-    await AuthServices.resetPassword(
+    await AuthServices.changePassword(
       decodedToken as JwtPayload,
       newPassword,
       oldPassword
@@ -154,5 +197,8 @@ export const AuthControllers = {
   getNewAccessToken,
   logOut,
   resetPassword,
+  setPassword,
+  changePassword,
+  forgotPassword,
   googleCallbackController,
 };

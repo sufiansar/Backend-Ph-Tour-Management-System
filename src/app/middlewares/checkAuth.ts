@@ -94,7 +94,9 @@ export const checkAuth = (...authRoles: string[]) => {
       if (isUserexit.isdeleted) {
         throw new AppError(httpSuccessCode.BAD_REQUEST, "User deleted", "");
       }
-
+      if (!isUserexit.isVerified) {
+        throw new AppError(403, "User Not Verified", "");
+      }
       if (!authRoles.includes(verifiedToken.role)) {
         throw new AppError(
           403,

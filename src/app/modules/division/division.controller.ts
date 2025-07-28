@@ -3,9 +3,14 @@ import { sendResponse } from "../../utility/sendResponce";
 import httpStatus from "http-status-codes";
 import { catchAsycn } from "../../utility/catchAsync";
 import { divisionService } from "./division.service";
+import { IDivision } from "./division.interface";
 
 const createDivision = catchAsycn(async (req: Request, res: Response) => {
-  const division = await divisionService.createDivision(req.body);
+  const payload: IDivision = {
+    ...req.body,
+    thumbnail: req.file?.path,
+  };
+  const division = await divisionService.createDivision(payload);
   sendResponse(res, {
     success: true,
     successCode: httpStatus.CREATED,
@@ -37,9 +42,13 @@ const getSingleDivision = catchAsycn(async (req: Request, res: Response) => {
 });
 
 const updateDivision = catchAsycn(async (req: Request, res: Response) => {
+  const payload: IDivision = {
+    ...req.body,
+    thumbnail: req.file?.path,
+  };
   const id = req.params.id;
 
-  const result = await divisionService.updateDivision(id, req.body);
+  const result = await divisionService.updateDivision(id, payload);
   sendResponse(res, {
     successCode: 200,
     success: true,
