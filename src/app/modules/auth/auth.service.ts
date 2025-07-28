@@ -96,32 +96,6 @@ const getNewAccessToken = async (refreshToken: string) => {
     accessToken: newAccesessToken,
   };
 };
-const resetPassword = async (
-  payload: Record<string, any>,
-  decodedToken: JwtPayload
-) => {
-  if (payload.id !== decodedToken.userId) {
-    throw new AppError(
-      httpSuccessCode.UNAUTHORIZED,
-      "You cannot reset your password",
-      ""
-    );
-  }
-
-  const isuserExit = await User.findById(decodedToken.userId);
-
-  if (!isuserExit) {
-    throw new AppError(httpSuccessCode.NOT_FOUND, "User not found", "");
-  }
-
-  const hashPassword = await bcryptjs.hash(
-    payload.newPassword,
-    Number(envVars.BCRYPT_SALT_ROUNT)
-  );
-
-  isuserExit.password = hashPassword;
-  await isuserExit.save();
-};
 
 const setPassword = async (userId: string, PlainPassword: string) => {
   const user = await User.findById(userId);
@@ -154,6 +128,41 @@ const setPassword = async (userId: string, PlainPassword: string) => {
   user.password = hashPassword;
   user.Auth = auths;
 
+  await user.save();
+};
+
+const resetPassword = async (
+  payload: Record<string, any>,
+  decodedToken: JwtPayload
+) => {
+  if (payload.id !== decodedToken.userId) {
+    throw new AppError(
+      httpSuccessCode.UNAUTHORIZED,
+      "You cannot reset your password",
+      ""
+    );
+  }
+
+  const user = await User.findById(decodedToken.userId).select("+password");
+
+  if (!user) {
+    throw new AppError(httpSuccessCode.NOT_FOUND, "User not found", "");
+  }
+
+  if (!payload.newPassword) {
+    throw new AppError(
+      httpSuccessCode.BAD_REQUEST,
+      "New password is required",
+      ""
+    );
+  }
+
+  const hashPassword = await bcryptjs.hash(
+    payload.newPassword,
+    Number(envVars.BCRYPT_SALT_ROUNT)
+  );
+
+  user.password = hashPassword;
   await user.save();
 };
 
