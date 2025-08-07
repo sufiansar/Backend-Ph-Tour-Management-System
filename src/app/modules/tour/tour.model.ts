@@ -1,4 +1,4 @@
-import { model, Schema, Types } from "mongoose";
+import { model, Schema, } from "mongoose";
 import { Itour, ItourTypes } from "./tour.interface";
 
 const tourTypeSchema = new Schema<ItourTypes>(
@@ -30,9 +30,9 @@ const tourSchema = new Schema<Itour>(
     amenities: { type: [String], default: [] },
     tourPlan: { type: [String], default: [] },
     maxGuest: { type: Number },
-    deleteImages: { type: String, default: [] },
+    deleteImages: { type: [String], default: [] },
     minAge: { type: Number },
-    dicvision: {
+    division: {
       type: Schema.Types.ObjectId,
       ref: "Division",
       required: true,
@@ -50,7 +50,7 @@ const tourSchema = new Schema<Itour>(
 );
 
 tourSchema.pre("save", async function (next) {
-  if (this.isModified("name")) {
+  if (this.isModified("title")) {
     const baseSlug = this.title.toLowerCase().split(" ").join("-");
     let slug = `${baseSlug}-division`;
     let counter = 0;

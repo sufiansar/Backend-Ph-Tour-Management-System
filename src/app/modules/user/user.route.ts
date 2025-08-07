@@ -1,11 +1,10 @@
-import { NextFunction, Request, Response, Router } from "express";
 import { UserControllers } from "./user.controller";
 import { createUserZodSchema, UpdateUserZodSchema } from "./user.validation";
 import { validationRequest } from "../../middlewares/validateReques";
 import { Role } from "./user.interface";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { MulterUpload } from "../../config/multer";
-import { object } from "zod";
+import { Router } from "express";
 
 const router = Router();
 

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Invoice</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #4a90e2;
+        --secondary: #f4f7fb;
+        --text: #2e3a59;
+        --border: #e0e6ed;
+        --success: #28a745;
+        --danger: #dc3545;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: var(--secondary);
+        color: var(--text);
+        margin: 0;
+        padding: 40px;
+      }
+
+      .invoice-box {
+        max-width: 850px;
+        background: white;
+        padding: 40px;
+        margin: auto;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+      }
+
+      .logo {
+        height: 60px;
+      }
+
+      h2 {
+        margin: 0;
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .company-info,
+      .bill-to,
+      .invoice-meta {
+        margin-top: 30px;
+        line-height: 1.7;
+        font-size: 0.95rem;
+      }
+
+      .invoice-meta {
+        text-align: right;
+      }
+
+      .info-grid {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+      }
+
+      thead {
+        background: var(--primary);
+        color: white;
+      }
+
+      th,
+      td {
+        padding: 14px;
+        border: 1px solid var(--border);
+        text-align: left;
+        font-size: 0.95rem;
+      }
+
+      .totals {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 40px;
+      }
+
+      .totals table {
+        width: 350px;
+        border: none;
+        background: #f9fbff;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .totals td {
+        padding: 12px 16px;
+        border: none;
+      }
+
+      .totals tr:not(:last-child) {
+        border-bottom: 1px solid #dfe6f0;
+      }
+
+      .totals td:first-child {
+        color: #555;
+      }
+
+      .totals td:last-child {
+        text-align: right;
+        font-weight: 500;
+      }
+
+      .totals tr:last-child td {
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .notes {
+        background: #f0f4f9;
+        padding: 18px 20px;
+        border-left: 4px solid var(--primary);
+        margin-top: 40px;
+        font-size: 0.95rem;
+        color: #444;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 50px;
+        font-size: 0.85rem;
+        color: #888;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="invoice-box">
+      <div class="header">
+        <div>
+          <h2>INVOICE</h2>
+          <div class="company-info">
+            <strong>Marketing Agency</strong><br />
+            Sufian<br />
+            www.hubspot.com<br />
+            123 First Street, Cambridge, MA<br />
+            example@firstapp.com
+          </div>
+        </div>
+        <img
+          class="logo"
+          src="https://cdn2.hubspot.net/hubfs/53/assets/hubspot.com/style-guide/hubspot-style-guide-logomark.svg"
+          alt="Logo"
+        />
+      </div>
+
+      <div class="info-grid">
+        <div class="bill-to">
+          <strong>Bill To:</strong><br />
+          Awesome Software<br />
+          John Doe<br />
+          12 Great Road, Cambridge, MA<br />
+          jane@jCompany.com
+        </div>
+
+        <div class="invoice-meta">
+          <p><strong>Invoice No:</strong> <%= transactionId %></p>
+          <p>
+            <strong>Date:</strong> <%= new Date(bookingDate).toDateString() %>
+          </p>
+          <p>
+            <strong>Due Date:</strong> <%= new Date(bookingDate).toDateString()
+            %>
+          </p>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Item ID</th>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#01</td>
+            <td><%= tourTitle %></td>
+            <td><%= guestCount %></td>
+            <td>$<%= Number(totalAmount).toFixed(2) %></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="totals">
+        <table>
+          <tr>
+            <td>Subtotal:</td>
+            <td>$<%= Number(totalAmount).toFixed(2) %></td>
+          </tr>
+          <tr>
+            <td>Tax (Flat):</td>
+            <td>$5.41</td>
+          </tr>
+          <tr>
+            <td>Discount (10%):</td>
+            <td>-$<%= (Number(totalAmount) * 0.1).toFixed(2) %></td>
+          </tr>
+          <tr>
+            <td>Total:</td>
+            <td>
+              $<%= (Number(totalAmount) + 5.41 - Number(totalAmount) *
+              0.1).toFixed(2) %>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="notes">
+        <strong>Note:</strong> Thank you for choosing our tour service! If you
+        have questions about this invoice, reach out via the contact email.
+      </div>
+
+      <div class="footer">
+        This invoice was generated by the Tour Management System.
+      </div>
+    </div>
+  </body>
+</html>

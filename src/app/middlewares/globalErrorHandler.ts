@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { envVars } from "../config/env";
 import AppError from "../errorHelpers/AppError";
-import { StatusCodes } from "http-status-codes";
-import mongoose from "mongoose";
 import { handelDuplicateError } from "../helpers/handelDuplicateError";
 import { handelValidationError } from "../helpers/handelValidationError";
 import { handelCastError } from "../helpers/handelCastError";
@@ -13,6 +11,7 @@ export const globalErrorHander = async (
   err: any,
   req: Request,
   res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
   if (envVars.NODE_ENV === "Development") {

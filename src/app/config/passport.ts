@@ -1,19 +1,14 @@
+import bcryptjs from "bcryptjs";
 import passport from "passport";
-
 import {
-  Strategy as googleStrategy,
+  Strategy as GoogleStrategy,
   Profile,
   VerifyCallback,
 } from "passport-google-oauth20";
-import { envVars } from "./env";
-import { User } from "../modules/user/user.model";
-import { Isactive, Role } from "../modules/user/user.interface";
-import dotenv from "dotenv";
 import { Strategy as LocalStrategy } from "passport-local";
-import bcryptjs from "bcryptjs";
-import AppError from "../errorHelpers/AppError";
-import httpSuccessCode from "http-status-codes";
-dotenv.config();
+import { Isactive, Role } from "../modules/user/user.interface";
+import { User } from "../modules/user/user.model";
+import { envVars } from "./env";
 
 passport.use(
   new LocalStrategy(
@@ -21,60 +16,64 @@ passport.use(
       usernameField: "email",
       passwordField: "password",
     },
-    async (email: string, password: string, done: any) => {
+    async (email: string, password: string, done) => {
       try {
-        const isUserExit = await User.findOne({ email });
-        if (!isUserExit) {
-          return done(null, false, { message: "User Not Found" });
+        const isUserExist = await User.findOne({ email });
+
+        if (!isUserExist) {
+          return done("User does not exist");
         }
+
+        if (!isUserExist.isVerified) {
+          return done("User is not verified");
+        }
+
         if (
-          isUserExit.isactive === Isactive.BLOCKED ||
-          isUserExit.isactive === Isactive.INACTIVE
+          isUserExist.isactive === Isactive.BLOCKED ||
+          isUserExist.isactive === Isactive.INACTIVE
         ) {
-          return done(`User is ${isUserExit.isactive}`);
+          return done(`User is ${isUserExist.isactive}`);
+        }
+        if (isUserExist.isdeleted) {
+          return done("User is deleted");
         }
 
-        if (isUserExit.isdeleted) {
-          return done("User deleted");
-        }
-
-        if (!isUserExit.isVerified) {
-          return done("User Not Verified");
-        }
-        const isGoogleAuthenticated = isUserExit.Auth.some(
-          (auth) => auth.provider === "google"
+        const isGoogleAuthenticated = isUserExist.Auth.some(
+          (providerObjects) => providerObjects.provider == "google"
         );
-        if (isGoogleAuthenticated && !isUserExit.password) {
+
+        if (isGoogleAuthenticated && !isUserExist.password) {
           return done(null, false, {
             message:
-              "You are authenticated with Google, not with email and password. ",
+              "You have authenticated through Google. So if you want to login with credentials, then at first login with google and set a password for your Gmail and then you can login with email and password.",
           });
         }
 
-        const ispasswordMatch = await bcryptjs.compare(
+        const isPasswordMatched = await bcryptjs.compare(
           password as string,
-          isUserExit.password as string
+          isUserExist.password as string
         );
-        if (!ispasswordMatch) {
-          return done(null, false, { message: "Incorrect Password" });
+
+        if (!isPasswordMatched) {
+          return done(null, false, { message: "Password does not match" });
         }
-        return done(null, isUserExit);
+
+        return done(null, isUserExist);
       } catch (error) {
-        console.log("Local Strategy Error", error);
-        return done(error);
+        console.log(error);
+        done(error);
       }
     }
   )
 );
 
 passport.use(
-  new googleStrategy(
+  new GoogleStrategy(
     {
       clientID: envVars.GOOGLE_CLIENT_ID,
       clientSecret: envVars.GOOGLE_CLIENT_SECRET,
       callbackURL: envVars.GOOGLE_CALLBACK,
     },
-
     async (
       accessToken: string,
       refreshToken: string,
@@ -83,48 +82,52 @@ passport.use(
     ) => {
       try {
         const email = profile.emails?.[0].value;
+
         if (!email) {
-          return done(null, false, { message: "email NOt Found" });
+          return done(null, false, { mesaage: "No email found" });
         }
-        let isUserExit = await User.findOne({ email });
-        if (isUserExit && !isUserExit.isVerified) {
-          return done("User Not Verified");
+
+        let isUserExist = await User.findOne({ email });
+        if (isUserExist && !isUserExist.isVerified) {
+          return done(null, false, { message: "User is not verified" });
         }
+
         if (
-          isUserExit &&
-          (isUserExit.isactive === Isactive.BLOCKED ||
-            isUserExit.isactive === Isactive.INACTIVE)
+          isUserExist &&
+          (isUserExist.isactive === Isactive.BLOCKED ||
+            isUserExist.isactive === Isactive.INACTIVE)
         ) {
-          return done(`User is ${isUserExit.isactive}`);
+          done(`User is ${isUserExist.isactive}`);
         }
 
-        if (isUserExit && isUserExit.isdeleted) {
-          return done("User deleted");
+        if (isUserExist && isUserExist.isdeleted) {
+          return done(null, false, { message: "User is deleted" });
         }
 
-        if (!isUserExit) {
-          isUserExit = await User.create({
+        if (!isUserExist) {
+          isUserExist = await User.create({
             email,
             name: profile.displayName,
             picture: profile.photos?.[0].value,
-            Role: Role.USER,
-            Auth: [
+            role: Role.USER,
+            isVerified: true,
+            auths: [
               {
                 provider: "google",
                 providerId: profile.id,
               },
             ],
           });
-          return done(null, isUserExit);
         }
+
+        return done(null, isUserExist);
       } catch (error) {
-        console.log("google sTrategy Error", error);
+        console.log("Google Strategy Error", error);
         return done(error);
       }
     }
   )
 );
-// console.log("Google Client ID:", process.env.GOOGLE_CLIENT_ID);
 
 passport.serializeUser((user: any, done: (err: any, id?: unknown) => void) => {
   done(null, user._id);

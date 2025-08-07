@@ -30,6 +30,9 @@ export const seedSuparAdmin = async () => {
       Role: Role.SUPER_ADMIN,
       Auth: [authProvider],
     };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const superadmin = await User.create(payload);
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error seeding Super Admin:", error);
+  }
 };

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { sendResponse } from "../../utility/sendResponce";
 import httpStatus from "http-status-codes";
 import { catchAsycn } from "../../utility/catchAsync";

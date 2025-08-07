@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { IGenericError } from "../interfaces/error.typs";
 
 export const handelCastError = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   err: mongoose.Error.CastError
 ): IGenericError => {
   return {

@@ -14,10 +14,6 @@ export const createTourZodSchema = z.object({
 
   description: z.string().optional(),
 
-  images: z
-    .array(z.string().url({ message: "Each image must be a valid URL" }))
-    .optional(),
-
   location: z.string().optional(),
 
   costFrom: z.number().optional(),
@@ -48,7 +44,7 @@ export const createTourZodSchema = z.object({
     .int()
     .min(0, { message: "Minimum age must be a non-negative number" }),
 
-  dicvision: z
+  division: z
     .string({ required_error: "Division ID is required" })
     .refine((val) => Types.ObjectId.isValid(val), {
       message: "Invalid MongoDB ObjectId for dicvision",
@@ -74,10 +70,6 @@ export const UpdateTourZodSchema = z.object({
     .optional(),
 
   description: z.string().optional(),
-
-  images: z
-    .array(z.string().url({ message: "Each image must be a valid URL" }))
-    .optional(),
 
   location: z.string().optional(),
 

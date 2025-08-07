@@ -7,7 +7,6 @@ import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
 import { QueryBuilder } from "../../utility/queryBuilder";
 import { userSearchableFields } from "./user.constant";
-import { promise } from "zod";
 import { deleteImageFromCLoudinary } from "../../config/cloudinary";
 import mongoose from "mongoose";
 
@@ -48,6 +47,15 @@ const updateUser = async (
   if (!isUserExit) {
     throw new AppError(httpSuccessCode.NOT_FOUND, "User Not Found", "");
   }
+  if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
+    if (userId !== decodedToken.userId) {
+      throw new AppError(
+        httpSuccessCode.FORBIDDEN,
+        "You are unauthorized to update another user's profile",
+        ""
+      );
+    }
+  }
 
   if (payload.Role) {
     if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
@@ -62,16 +70,6 @@ const updateUser = async (
       throw new AppError(
         httpSuccessCode.FORBIDDEN,
         "You are Not Athorized",
-        ""
-      );
-    }
-  }
-
-  if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
-    if (userId !== decodedToken.userId) {
-      throw new AppError(
-        httpSuccessCode.FORBIDDEN,
-        "You are unauthorized to update another user's profile",
         ""
       );
     }

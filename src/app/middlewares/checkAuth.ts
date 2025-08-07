@@ -3,7 +3,7 @@ import AppError from "../errorHelpers/AppError";
 import { verifyToken } from "../utility/jwt";
 import { envVars } from "../config/env";
 import { JwtPayload } from "jsonwebtoken";
-import { Isactive, Role } from "../modules/user/user.interface";
+import { Isactive } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";
 import httpSuccessCode from "http-status-codes";
 

@@ -1,4 +1,4 @@
-import z, { object } from "zod";
+import z from "zod";
 import { Isactive, Role } from "./user.interface";
 
 export const createUserZodSchema = z.object({

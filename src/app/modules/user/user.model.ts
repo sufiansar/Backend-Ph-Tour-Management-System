@@ -1,6 +1,5 @@
 import { model, Schema } from "mongoose";
 import { IAuthProvider, Isactive, Iuser, Role } from "./user.interface";
-import { string } from "zod";
 
 const authschema = new Schema<IAuthProvider>(
   {
@@ -28,6 +27,7 @@ const userSchema = new Schema<Iuser>(
     },
     isdeleted: { type: Boolean, default: false },
     isVerified: { type: String, default: true },
+    createdAt: { type: Date, default: Date.now },
     Role: {
       type: String,
       enum: Object.values(Role),

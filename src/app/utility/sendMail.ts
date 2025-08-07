@@ -36,10 +36,10 @@ export const sendEmail = async ({
   attachments,
 }: SendEmailOptions) => {
   try {
-    const templatePath = path.join(__dirname, `template/${templateName}.ejs`);
+    const templatePath = path.join(__dirname, `templates/${templateName}.ejs`);
     const html = await ejs.renderFile(templatePath, templateData);
     const info = await transporter.sendMail({
-      from: String(envVars.SMTP.SMTP_FROM),
+      from: envVars.SMTP.SMTP_FROM,
       to: to,
       subject: subject,
       html: html,
@@ -49,8 +49,9 @@ export const sendEmail = async ({
         contentType: attachment.contentType,
       })),
     });
+    console.log(`\u2709\uFE0F Email sent to ${to}: ${info.messageId}`);
   } catch (error: any) {
     console.log("email sending error", error.message);
-    throw new AppError(401, "Email error", "");
+    throw new AppError(401, "Email error", error);
   }
 };

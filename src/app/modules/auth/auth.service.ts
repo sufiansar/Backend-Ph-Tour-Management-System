@@ -4,14 +4,12 @@ import { User } from "../user/user.model";
 import httpSuccessCode from "http-status-codes";
 import bcryptjs from "bcryptjs";
 import Jwt, { JwtPayload } from "jsonwebtoken";
-import { generateToken, verifyToken } from "../../utility/jwt";
 import { envVars } from "../../config/env";
 import {
   createNewaccessTokenWithRefreshToken,
   createUserToken,
 } from "../../utility/user.tokens";
 import { sendEmail } from "../../utility/sendMail";
-import { name } from "ejs";
 const credentialsLogin = async (payload: Partial<Iuser>) => {
   const { email, password } = payload;
   const isUserexit = await User.findOne({ email });
@@ -43,7 +41,7 @@ const credentialsLogin = async (payload: Partial<Iuser>) => {
   // );
 
   const userToken = createUserToken(isUserexit);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: pass, ...rest } = isUserexit.toObject();
   return {
     accessToken: userToken.accessToken,

@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserRoutes = void 0;
+const user_controller_1 = require("./user.controller");
+const user_validation_1 = require("./user.validation");
+const validateReques_1 = require("../../middlewares/validateReques");
+const user_interface_1 = require("./user.interface");
+const checkAuth_1 = require("../../middlewares/checkAuth");
+const multer_1 = require("../../config/multer");
+const express_1 = require("express");
+const router = (0, express_1.Router)();
+router.post("/register", multer_1.MulterUpload.single("file"), (0, validateReques_1.validationRequest)(user_validation_1.createUserZodSchema), user_controller_1.UserControllers.createUser);
+router.get("/all-user", (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.SUPER_ADMIN), user_controller_1.UserControllers.getAllUser);
+router.get("/me", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), user_controller_1.UserControllers.getMe);
+router.get("/:id", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), user_controller_1.UserControllers.getSingleUser);
+router.patch("/:id", (0, validateReques_1.validationRequest)(user_validation_1.UpdateUserZodSchema), multer_1.MulterUpload.single("file"), (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), user_controller_1.UserControllers.updateUser);
+exports.UserRoutes = router;

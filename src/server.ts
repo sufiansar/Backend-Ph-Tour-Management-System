@@ -40,16 +40,21 @@ process.on("unhandledRejection", () => {
 
   if (server) {
     server.close();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     process.exit;
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   process.exit;
 });
 // uncaughtException
 process.on("uncaughtException", (err) => {
   console.log("Uncaught Exception Detected.....server shutting off", err);
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   if (server) {
     server.close();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     process.exit;
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   process.exit;
 });

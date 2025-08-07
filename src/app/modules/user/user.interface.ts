@@ -34,4 +34,5 @@ export interface Iuser {
 
   booking?: Types.ObjectId[];
   guide?: Types.ObjectId[];
+  createdAt?: Date;
 }

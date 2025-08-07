@@ -1,10 +1,8 @@
-import { NextFunction, Request, Response } from "express";
-import httpStatus, { StatusCodes } from "http-status-codes";
+import { Request, Response } from "express";
+import httpStatus from "http-status-codes";
 import { UserServices } from "./user.service";
 import { catchAsycn } from "../../utility/catchAsync";
 import { sendResponse } from "../../utility/sendResponce";
-import { verifyToken } from "../../utility/jwt";
-import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
 import { Iuser } from "./user.interface";
 
@@ -56,56 +54,48 @@ const updateUser = catchAsycn(async (req: Request, res: Response) => {
   // });
 });
 
-const getAllUser = catchAsycn(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const query = req.query;
-    const result = await UserServices.getAllUser(
-      query as Record<string, string>
-    );
+const getAllUser = catchAsycn(async (req: Request, res: Response) => {
+  const query = req.query;
+  const result = await UserServices.getAllUser(query as Record<string, string>);
 
-    sendResponse(res, {
-      success: true,
-      successCode: httpStatus.OK,
-      message: "Get-All User Retrived Successfully",
-      data: result.data,
-      meta: result.meta,
-    });
-    // res.status(StatusCodes.OK).json({
-    //   success: true,
-    //   message: "Get-All User Retrived Successfully",
-    //   data: result,
-    // });
-  }
-);
+  sendResponse(res, {
+    success: true,
+    successCode: httpStatus.OK,
+    message: "Get-All User Retrived Successfully",
+    data: result.data,
+    meta: result.meta,
+  });
+  // res.status(StatusCodes.OK).json({
+  //   success: true,
+  //   message: "Get-All User Retrived Successfully",
+  //   data: result,
+  // });
+});
 
-const getMe = catchAsycn(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = req.user as JwtPayload;
-    console.log(decodedToken);
-    const result = await UserServices.getMe(decodedToken.userId);
+const getMe = catchAsycn(async (req: Request, res: Response) => {
+  const decodedToken = req.user as JwtPayload;
+  console.log(decodedToken);
+  const result = await UserServices.getMe(decodedToken.userId);
 
-    console.log(result);
-    sendResponse(res, {
-      success: true,
-      successCode: httpStatus.CREATED,
-      message: "Your profile Retrieved Successfully",
-      data: result,
-    });
-  }
-);
-const getSingleUser = catchAsycn(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
-    const result = await UserServices.getSingleUser(id);
+  console.log(result);
+  sendResponse(res, {
+    success: true,
+    successCode: httpStatus.CREATED,
+    message: "Your profile Retrieved Successfully",
+    data: result,
+  });
+});
+const getSingleUser = catchAsycn(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await UserServices.getSingleUser(id);
 
-    sendResponse(res, {
-      success: true,
-      successCode: httpStatus.OK,
-      message: "Get Single User Retrived Successfully",
-      data: result.data,
-    });
-  }
-);
+  sendResponse(res, {
+    success: true,
+    successCode: httpStatus.OK,
+    message: "Get Single User Retrived Successfully",
+    data: result.data,
+  });
+});
 
 export const UserControllers = {
   createUser,

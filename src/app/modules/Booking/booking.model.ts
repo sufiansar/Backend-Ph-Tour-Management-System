@@ -11,6 +11,7 @@ const bookingSchema = new Schema<IBooking>({
     enum: Object.values(BOOKING_STATUS),
     default: BOOKING_STATUS.PENDING,
   },
+  createdAt: { type: Date, default: Date.now },
 });
 
 export const Booking = model<IBooking>("Booking", bookingSchema);

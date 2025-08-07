@@ -29,12 +29,13 @@ interface EnvConfig {
     SSL_SUCCESS_BACKEND_URL: string;
     SSL_FAIL_BACKEND_URL: string;
     SSL_CANCEL_BACKEND_URL: string;
+    SSL_IPN_URL: string;
   };
 
   CLOUDINARY: {
-    CLOUDINARY_CLOUD_NAME: String;
-    CLOUDINARY_API_KEY: String;
-    CLOUDINARY_SECRECT_KEY: String;
+    CLOUDINARY_CLOUD_NAME: string;
+    CLOUDINARY_API_KEY: string;
+    CLOUDINARY_SECRECT_KEY: string;
   };
 
   SMTP: {
@@ -92,6 +93,7 @@ const loadEnvVariables = (): EnvConfig => {
     "REDIS_HOST",
     "REDIS_PASS",
     "REDIS_USERNAME",
+    "SSL_IPN_URL",
   ];
   envRequreVariabls.forEach((key) => {
     if (!process.env[key]) {
@@ -100,7 +102,7 @@ const loadEnvVariables = (): EnvConfig => {
   });
   return {
     PORT: process.env.PORT as string,
-    DB_URL: process.env.DB_URL!,
+    DB_URL: process.env.DB_URL as string,
     NODE_ENV: process.env.NODE_ENV as "Development" | "Production",
     JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET as string,
     JWT_EXPIREDATE: process.env.JWT_EXPIREDATE as string,
@@ -127,6 +129,7 @@ const loadEnvVariables = (): EnvConfig => {
       SSL_SUCCESS_BACKEND_URL: process.env.SSL_SUCCESS_BACKEND_URL as string,
       SSL_FAIL_BACKEND_URL: process.env.SSL_FAIL_BACKEND_URL as string,
       SSL_CANCEL_BACKEND_URL: process.env.SSL_CANCEL_BACKEND_URL as string,
+      SSL_IPN_URL: process.env.SSL_IPN_URL as string,
     },
     CLOUDINARY: {
       CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,

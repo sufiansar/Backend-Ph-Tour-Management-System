@@ -1,5 +1,3 @@
-import { Query } from "mongoose";
-import { excludeField } from "../../utility/globalConstant";
 import { tourSearchableFields } from "./tour.constant";
 import { Itour, ItourTypes } from "./tour.interface";
 import { Tour, TourTypesModel } from "./tour.model";

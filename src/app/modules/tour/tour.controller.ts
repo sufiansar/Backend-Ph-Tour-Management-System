@@ -18,6 +18,25 @@ const createTour = catchAsycn(async (req: Request, res: Response) => {
   });
 });
 
+// const createTour = catchAsycn(async (req: Request, res: Response) => {
+//   const payload: Itour = {
+//     ...req.body,
+//     images:
+//       (req.files as Express.Multer.File[] | undefined)?.map(
+//         (file) => file.path
+//       ) || [],
+//   };
+
+//   const result = await TourService.createTour(payload);
+
+//   sendResponse(res, {
+//     successCode: 201,
+//     success: true,
+//     message: "Tour created successfully",
+//     data: result,
+//   });
+// });
+
 const getAllTours = catchAsycn(async (req: Request, res: Response) => {
   const query = req.query;
   const result = await TourService.getAllTours(query as Record<string, string>);
